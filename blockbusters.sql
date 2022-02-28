@@ -27,3 +27,13 @@ DROP TABLE IF EXISTS 'Transactions';
      --Key
      PRIMARY KEY ('movie_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ CREATE TABLE IF NOT EXISTS 'Store'(
+     --Attributes
+     'store_id' int(11) NOT NULL,
+     'zip_code' int(5) NOT NULL, 
+     'location_name' varchar(20) NOT NULL,
+     --Key
+     PRIMARY KEY ('store_id')
+ ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
