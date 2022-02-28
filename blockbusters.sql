@@ -37,3 +37,14 @@ DROP TABLE IF EXISTS 'Transactions';
      --Key
      PRIMARY KEY ('store_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+  CREATE TABLE IF NOT EXISTS 'Catelog'(
+     --Attributes
+     'movie_id' int(11) NOT NULL,
+     'store_id' int(11) NOT NULL, 
+     'total_quantity' int(11) NOT NULL,
+     'quantity_available' int(11) NOT NULL,
+     'times_rented' int(11) NOT NULL,
+     --Key
+     PRIMARY KEY ('movie_id', 'store_id')
+ ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
