@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS 'Transactions';
      'genre' varchar(10) NOT NULL,
      'director_name' varchar(20) NOT NULL,
      'rating' DECIMAL(2,1),
-     'cast_list' varchar(200)   --- FIX THIS data type
+     'cast_list' SET(varchar(20), varchar(20), varchar(20))
      --Key
      PRIMARY KEY ('movie_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -46,7 +46,9 @@ DROP TABLE IF EXISTS 'Transactions';
      'quantity_available' int(11) NOT NULL,
      'times_rented' int(11) NOT NULL,
      --Key
-     PRIMARY KEY ('movie_id', 'store_id')
+     PRIMARY KEY ('movie_id', 'store_id'),
+     FOREIGN KEY ('movie_id') REFERENCES Movie('movie_id'),
+     FOREIGN KEY ('store_id') REFERENCES Store('store_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -59,14 +61,20 @@ DROP TABLE IF EXISTS 'Transactions';
      'date_due' DATE NOT NULL,
      'transaction_id' int(11) NOT NULL,
      --Key
-     PRIMARY KEY ('transaction_id')
+     PRIMARY KEY ('transaction_id'),
+     FOREIGN KEY ('movie_id') REFERENCES Movie('movie_id'),
+     FOREIGN KEY ('store_id') REFERENCES Store('store_id'),
+     FOREIGN KEY ('transaction_id') REFERENCES Transaction('transaction_id'),
+     FOREIGN KEY ('customer_id') REFERENCES Customer('customer_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
  CREATE TABLE IF NOT EXISTS 'Transaction'(
      --Attributes
      'transaction_id' int(11) NOT NULL,
+     'customer_id' int(11),
      'price' DECIMAL(8,2) NOT NULL, 
      'store_id' int(11) NOT NULL,
      --Key
-     PRIMARY KEY ('transaction_id')
+     PRIMARY KEY ('transaction_id'),
+     FOREIGN KEY ('customer_id') REFERENCES Customer('customer_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
