@@ -22,8 +22,8 @@ DROP TABLE IF EXISTS 'Transactions';
      'movie_name' varchar(20) NOT NULL, 
      'genre' varchar(10) NOT NULL,
      'director_name' varchar(20) NOT NULL,
-     'rating' float(2,1),
-     'cast_list' varchar(200)
+     'rating' DECIMAL(2,1),
+     'cast_list' varchar(200)   --- FIX THIS data type
      --Key
      PRIMARY KEY ('movie_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -47,4 +47,26 @@ DROP TABLE IF EXISTS 'Transactions';
      'times_rented' int(11) NOT NULL,
      --Key
      PRIMARY KEY ('movie_id', 'store_id')
+ ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+  CREATE TABLE IF NOT EXISTS 'Active_Rentals'(
+     --Attributes
+     'movie_id' int(11) NOT NULL,
+     'store_id' int(11) NOT NULL, 
+     'customer_id' int(11) NOT NULL,
+     'date_rented' DATE NOT NULL,
+     'date_due' DATE NOT NULL,
+     'transaction_id' int(11) NOT NULL,
+     --Key
+     PRIMARY KEY ('transaction_id')
+ ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ CREATE TABLE IF NOT EXISTS 'Transaction'(
+     --Attributes
+     'transaction_id' int(11) NOT NULL,
+     'price' DECIMAL(8,2) NOT NULL, 
+     'store_id' int(11) NOT NULL,
+     --Key
+     PRIMARY KEY ('transaction_id')
  ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
