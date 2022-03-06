@@ -30,21 +30,19 @@ get_available_movies_by_zipcode = """
     FROM Catalog JOIN Movie ON Catalog.movie_id = Movie.movie_id
     JOIN Store ON Store.store_id = Catalog.store_id
     WHERE Catalog.quantity_available > 0
-    AND Store.zip_code = %d;
+    AND Store.zip_code = %s;
     """
 
 get_stores_having_movie = """
-    SELECT Store.store_id, Store.location_name, Catalog.quantity_available
+    SELECT Store.store_id, Store.location_name, Movie.movie_name, Catalog.quantity_available
     FROM Catalog JOIN Movie on Catalog.movie_id = Movie.movie_id
     JOIN Store ON Store.store_id = Catalog.store_id
-    WHERE Catalog.movie_name LIKE '*%s*'
+    WHERE Movie.movie_name LIKE "%""" + """ %s%"
     AND Catalog.quantity_available > 0;
     """
 
 rent_movie_from_store = """
     INSERT INTO Active_Rentals (movie_id, store_id, customer_id, date_rented, date_due, transaction_id)
-    VALUES (((SELECT count(*) FROM Transaction) + 1), %d, %d, )
-    INSERT INTO Transaction (transaction_id, customer_id, price, store_id)
-    VALUES(((SELECT count(*) FROM Transaction) + 1), %d, %.2f, %d);
+    VALUES (%d, %d, %d, "%m/%d/%Y"," %m/%d/%Y", (SELECT count(*) FROM Transaction) + 1));
 """
 
