@@ -28,4 +28,6 @@ from flask_jwt_extended import unset_access_cookies
 from flask_jwt_extended import verify_jwt_in_request
 
 
-cnx = msql.connector.connect('mockmuster.db')
+cnx = msql.connector.connect('mockbuster.db')
+
+
