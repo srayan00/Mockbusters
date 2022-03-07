@@ -1,33 +1,30 @@
-import os
-import ui
-import time
-import yaml
-import globl
-import random
-import datetime
-import mysql.connector
 
-from datetime import timedelta
-from collections import defaultdict
-from multiprocessing import Process
-from flask_sqlalchemy import SQLAlchemy
-from apscheduler.schedulers.background import BackgroundScheduler
+#instructions to run:
+   # in terminal:
+      # export FLASK_APP=app
+      # export FLASK_ENV=development
+      # flask run
+   # go to filepath/login.html in the browser
 
-from flask import Flask
-from flask import request
-from flask import redirect
-from flask import render_template
-from flask import make_response
+# cnx = msql.connector.connect('mockbuster.db')
 
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-from flask_jwt_extended import JWTManager
-from flask_jwt_extended import set_access_cookies
-from flask_jwt_extended import unset_access_cookies
-from flask_jwt_extended import verify_jwt_in_request
+from flask import Flask, redirect, url_for, request
+app = Flask(__name__)
 
+@app.route('/success/<name>')
+def success(name):
+   return 'welcome %s' % name
 
-cnx = msql.connector.connect('mockbuster.db')
+@app.route('/login',methods = ['POST', 'GET'])
+def login():
+   if request.method == 'POST':
+      user = request.form['nm']
+      return redirect(url_for('success',name = user))
+   else:
+      user = request.args.get('nm')
+      return redirect(url_for('success',name = user))
+
+if __name__ == '__main__':
+   app.run(debug = True)
 
 
