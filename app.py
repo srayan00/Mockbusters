@@ -1,9 +1,11 @@
 
 #instructions to run:
    # in terminal:
+      # pip install virtualenv
+      # pip install flask
       # export FLASK_APP=app
       # export FLASK_ENV=development
-      # flask run
+      # flask run (or "python -m flask run" if that doesn't work)
    # go to filepath/login.html in the browser
 
 # cnx = msql.connector.connect('mockbuster.db')
