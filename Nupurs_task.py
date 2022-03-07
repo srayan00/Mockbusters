@@ -34,20 +34,21 @@ class Catalog(db.Model):
     times_rented = db.Column(db.Integer, nullable = False)
 
 
-class Transaction(db.Model) :
-    __tablename__ = "Transaction"
+class Transactions(db.Model) :
+    __tablename__ = "Transactions"
     transaction_id = db.Column(db.Integer, primary_key=True, nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey(Customer.customer_id), primary_key=False, nullable=False)
     store_id = db.Column(db.Integer, db.ForeignKey(Store.store_id), primary_key=False, nullable=False)
     price = db.Column(db.Integer, primary_key = False, nullable = False)
 
 
-class Active_Rental(db.Model):
-    __tablename__ = "Active_Rental"
+class Active_Rentals(db.Model):
+    __tablename__ = "Active_Rentals"
+    rental_id = db.Column(db.Integer, primary_key=True, nullable=False)
     movie_id = db.Column(db.Integer, db.ForeignKey(Movie.movie_id), primary_key = False, nullable = False)
     store_id = db.Column(db.Integer, db.ForeignKey(Store.store_id), primary_key = False, nullable = False)
     customer_id = db.Column(db.Integer, db.ForeignKey(Customer.customer_id), primary_key = False, nullable = False)
     date_rented = db.Column(db.Date, primary_key = False, nullable = False)
     date_due = db.Column(db.Date, primary_key=False, nullable=False)
-    transaction_id = db.Column(db.Integer, db.ForeignKey(Transaction.transaction_id),
-                               primary_key = True, nullable = False)
+    transaction_id = db.Column(db.Integer, db.ForeignKey(Transactions.transaction_id),
+                               primary_key = False, nullable = False)
