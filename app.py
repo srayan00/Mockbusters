@@ -21,7 +21,7 @@ def success(name):
 def homepage():
    return render_template('homepage.html')
 
-@app.route('/login',methods = ['POST', 'GET'])
+@app.route('/signup',methods = ['POST', 'GET'])
 def login():
    if request.method == 'POST':
       user = request.form['nm']
