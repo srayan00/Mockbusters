@@ -41,8 +41,16 @@ get_stores_having_movie = """
     AND Catalog.quantity_available > 0;
     """
 
+get_movies_by_star = """
+    SELECT Movie.movie_name, Movie.movie_id, Catelog.store_id, Catelog.quantity_available
+    FROM Catelog JOIN Movie on Catelog.movie_id = Movie.movie_id
+    WHERE Movie.cast_list LIKE "%""" + """%s%";
+"""
+
 rent_movie_from_store = """
     INSERT INTO Active_Rentals (movie_id, store_id, customer_id, date_rented, date_due, transaction_id)
     VALUES (%d, %d, %d, "%m/%d/%Y"," %m/%d/%Y", (SELECT count(*) FROM Transaction) + 1));
 """
+
+
 
