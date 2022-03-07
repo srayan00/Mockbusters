@@ -8,12 +8,16 @@
 
 # cnx = msql.connector.connect('mockbuster.db')
 
-from flask import Flask, redirect, url_for, request
+from flask import Flask, redirect, url_for, request, render_template
 app = Flask(__name__)
 
 @app.route('/success/<name>')
 def success(name):
    return 'welcome %s' % name
+
+@app.route('/', methods=['GET', 'POST'])
+def homepage():
+   return render_template('homepage.html')
 
 @app.route('/login',methods = ['POST', 'GET'])
 def login():
