@@ -15,10 +15,10 @@ from flask import Flask, redirect, url_for, request, render_template
 app = Flask(__name__)
 
 
-@app.route('/success/<count>')
-def success(count):
+@app.route('/success/<count>/<user>')
+def success(count, user):
    if count == '0':
-      return 'Successfully created username: '
+      return 'Successfully created username: ' + user
    else:
       return 'oops! username already exists, please go back and try again.'
 
@@ -38,7 +38,7 @@ def signup():
       count = curs.fetchall()
       cnx.commit()
       curs.close()
-      return redirect(url_for('success',count = count[0][0]))
+      return redirect(url_for('success',count = count[0][0], user=user))
    curs.close()
    return render_template('signup.html')
 
