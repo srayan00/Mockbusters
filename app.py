@@ -14,10 +14,19 @@ from flask import Flask, redirect, url_for, request, render_template
 
 app = Flask(__name__)
 
+add_customer = """
+    INSERT INTO Customer(customer_id, customer_name, customer_email)
+    VALUES('%s','%s', '%s');
+    """
 
-@app.route('/success/<count>/<user>')
-def success(count, user):
+@app.route('/success/<count>/<user>/<name>/<email>')
+def success(count, user, name, email):
    if count == '0':
+      cnx = sqlite3.connect('Mockbusters.db')
+      curs = cnx.cursor()
+      curs.execute(add_customer % (user, name, email))
+      cnx.commit()
+      curs.close()
       return 'Successfully created username: ' + user
    else:
       return 'oops! username already exists, please go back and try again.'
@@ -38,7 +47,7 @@ def signup():
       count = curs.fetchall()
       cnx.commit()
       curs.close()
-      return redirect(url_for('success',count = count[0][0], user=user))
+      return redirect(url_for('success',count = count[0][0], user=user, name=str(request.form['un']), email=str(request.form['em'])))
    curs.close()
    return render_template('signup.html')
 
