@@ -48,8 +48,17 @@ get_movies_by_star = """
 """
 
 rent_movie_from_store = """
-    INSERT INTO Active_Rentals (movie_id, store_id, customer_id, date_rented, date_due, transaction_id)
-    VALUES (%d, %d, %d, "%m/%d/%Y"," %m/%d/%Y", (SELECT count(*) FROM Transaction) + 1));
+    INSERT INTO Active_Rentals (rental_id, movie_id, store_id, customer_id, date_rented, date_due, transaction_id)
+    VALUES (%d, %d, %d, %d, %s, %s, (SELECT count(*) FROM Transaction) + 1));
+"""
+
+rent_movie_trigger = """
+    CREATE TRIGGER afterRentalInsert AFTER INSERT ON Active_Rentals FOR EACH ROW
+    BEGIN
+        INSERT INTO Transactions(transaction_id, customer_id, price, store_id)
+        VALUES (NEW.transaction_id, NEW.customer_id, DATEDIFF(NEW.date_due, NEW.date_rented) * 3, NEW.store_id);
+    END;
+
 """
 
 
