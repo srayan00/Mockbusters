@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 @app.route('/success/<count>')
 def success(count):
-   if count == 0:
+   if count == '0':
       return 'Successfully created username: '
    else:
       return 'oops! username already exists, please go back and try again.'
