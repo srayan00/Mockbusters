@@ -22,7 +22,7 @@ from flask import make_response
 # Database queries
 add_customer = """
     INSERT INTO Customer(customer_id, customer_name, customer_email)
-    VALUES(%d,%s, %s);
+    VALUES(%s,%s, %s);
     """
 
 get_available_movies_by_zipcode = """

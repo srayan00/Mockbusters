@@ -6,18 +6,21 @@
 # export FLASK_ENV=development
 # flask run (or "python -m flask run" if that doesn't work)
 # go to filepath/login.html in the browser
-import mysql.connector
+import sqlite3
+from sqlite3 import Error
 
-cnx = msql.connector.connect('blockbuster.db')
 
 from flask import Flask, redirect, url_for, request, render_template
 
 app = Flask(__name__)
 
 
-# @app.route('/success/<name>')
-# def success(name):
-#    return 'welcome %s' % name
+@app.route('/success/<count>')
+def success(count):
+   if count == 0:
+      return 'Successfully created username: '
+   else:
+      return 'oops! username already exists, please go back and try again.'
 
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
@@ -26,13 +29,17 @@ def homepage():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
+   cnx = sqlite3.connect('Mockbusters.db')
+   curs = cnx.cursor()
    if request.method == 'POST':
-      curs = cnx.cursor()
-      user = request.form['nm']
-      query  = "SELECT count(*) FROM Customer WHERE Customer.customer_id = '%s';"
-      curs.execute(query, user)
+      user = str(request.form['nm'])
+      query  = "SELECT count(*) FROM Customer WHERE Customer.customer_id = \'" + str(user) + "\';"
+      curs.execute(query)
       count = curs.fetchall()
-      return 'count is: ' + count
+      cnx.commit()
+      curs.close()
+      return redirect(url_for('success',count = count[0][0]))
+   curs.close()
    return render_template('signup.html')
 
 @app.route('/rent', methods=['POST', 'GET'])

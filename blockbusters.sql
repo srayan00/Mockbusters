@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS 'Transactions';
 -- ----------------------------------------
  CREATE TABLE IF NOT EXISTS 'Customer'(
      --Attributes
-     'customer_id' int(11) NOT NULL,
+     'customer_id' varchar(10) NOT NULL,
      'customer_name' varchar(10) NOT NULL, 
      'customer_email' varchar(20) NOT NULL,
      --Key
@@ -84,16 +84,16 @@ DROP TABLE IF EXISTS 'Transactions';
     Genres: Children's Film, Comedy, Animation, Action, Adventure, Fantasy
 
     INSERT INTO Customer(customer_id, customer_name, customer_email)
-    VALUES(1, 'Sarah', 'testemail0@purdue.edu');
+    VALUES('sare_bear', 'Sarah', 'testemail0@purdue.edu');
 
     INSERT INTO Customer(customer_id, customer_name, customer_email)
-    VALUES(2,'Nupur', 'testemail1@purdue.edu');
+    VALUES('noops','Nupur', 'testemail1@purdue.edu');
 
     INSERT INTO Customer(customer_id, customer_name, customer_email)
-    VALUES(3, 'Nikita', 'testemail2@purdue.edu');
+    VALUES('chiquita', 'Nikita', 'testemail2@purdue.edu');
 
     INSERT INTO Customer(customer_id, customer_name, customer_email)
-    VALUES(4, 'Sahana', 'testemail3@purdue.edu');
+    VALUES('soops', 'Sahana', 'testemail3@purdue.edu');
 
     INSERT INTO Movie(movie_id, movie_name, genre, director_name, rating, cast_list)
     VALUES(1, "Madagascar", "Children's Film, Comedy, Animation",
