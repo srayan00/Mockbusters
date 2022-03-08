@@ -6,8 +6,9 @@
 # export FLASK_ENV=development
 # flask run (or "python -m flask run" if that doesn't work)
 # go to filepath/login.html in the browser
+import mysql.connector
 
-# cnx = msql.connector.connect('mockbuster.db')
+cnx = msql.connector.connect('blockbuster.db')
 
 from flask import Flask, redirect, url_for, request, render_template
 
@@ -25,7 +26,14 @@ def homepage():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    return render_template('signup.html')
+   if request.method == 'POST':
+      curs = cnx.cursor()
+      user = request.form['nm']
+      query  = "SELECT count(*) FROM Customer WHERE Customer.customer_id = '%s';"
+      curs.execute(query, user)
+      count = curs.fetchall()
+      return 'count is: ' + count
+   return render_template('signup.html')
 
 @app.route('/rent', methods=['POST', 'GET'])
 def ren():
