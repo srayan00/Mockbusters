@@ -27,6 +27,17 @@ def homepage():
 def signup():
     return render_template('signup.html')
 
+@app.route('/rent', methods=['POST', 'GET'])
+def ren():
+    return render_template('rent.html')
+
+@app.route('/return_movie', methods=['GET', 'POST'])
+def return_movie():
+    return render_template('return.html')
+
+@app.route('/lookup', methods=['GET', 'POST'])
+def lookup():
+    return render_template('lookup.html')
 
 # def login():
 #    if request.method == 'POST':
