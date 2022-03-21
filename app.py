@@ -53,7 +53,13 @@ def signup():
 
 @app.route('/rent', methods=['POST', 'GET'])
 def ren():
-    return render_template('rent.html')
+   cnx = sqlite3.connect('Mockbusters.db')
+   curs = cnx.cursor()
+   if request.method == 'POST':
+      zip_code = str(request.form['zip'])
+      name = str(request.form['mov'])
+
+   return render_template('rent.html')
 
 @app.route('/return_movie', methods=['GET', 'POST'])
 def return_movie():
