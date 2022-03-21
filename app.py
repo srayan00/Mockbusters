@@ -5,7 +5,7 @@
 # export FLASK_APP=app
 # export FLASK_ENV=development
 # flask run (or "python -m flask run" if that doesn't work)
-# go to filepath/login.html in the browser
+# go to link/signup in the browser
 import sqlite3
 from sqlite3 import Error
 
