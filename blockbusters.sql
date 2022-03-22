@@ -75,8 +75,8 @@ DROP TABLE IF EXISTS 'Transactions';
      'movie_id' int(11) NOT NULL,
      'store_id' int(11) NOT NULL, 
      'customer_id' int(11) NOT NULL,
-     'date_rented' DATE NOT NULL,
-     'date_due' DATE NOT NULL,
+     'date_rented' text NOT NULL,
+     'date_due' text NOT NULL,
      'transaction_id' int(11) NOT NULL,
      --Key
      PRIMARY KEY ('rental_id'),
@@ -88,3 +88,14 @@ DROP TABLE IF EXISTS 'Transactions';
  -- ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+CREATE TRIGGER afterRentalInsert AFTER INSERT ON Active_Rentals FOR EACH ROW
+    BEGIN
+        INSERT INTO Transactions(transaction_id, customer_id, price, store_id)
+        VALUES (NEW.transaction_id, NEW.customer_id, abs(JULIANDAY(NEW.date_due)- JULIANDAY(NEW.date_rented)) * 3, NEW.store_id);
+    END;
+
+
+CREATE TRIGGER updateCatalog AFTER INSERT ON Active_Rentals FOR EACH ROW
+    BEGIN
+        UPDATE Catalog SET quantity_available = quantity_available - 1 WHERE movie_id = NEW.movie_id AND store_id = NEW.store_id;
+    END;
