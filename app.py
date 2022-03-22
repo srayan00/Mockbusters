@@ -45,6 +45,19 @@ get_due_date = """
    SELECT DATE(\'now\', \'+7 days\');
 """
 
+check_catalog_combo = """
+   SELECT count(*) FROM Catalog JOIN Movie ON Movie.movie_id = Catalog.movie_id
+                  JOIN Store ON Store.store_id = Catalog.store_id
+                  WHERE Movie.movie_name LIKE \'%s\'
+                  AND (Store.store_id = %d
+                  OR Store.zip_code LIKE \'%s\');"""
+
+count_catelog_available  = """SELECT Catalog.quantity_available FROM Catalog JOIN Movie ON Movie.movie_id = Catalog.movie_id
+                  JOIN Store ON Store.store_id = Catalog.store_id
+                  WHERE Movie.movie_name LIKE \'%s\'
+                  AND (Store.store_id = %d
+                  OR Store.zip_code LIKE \'%s\');"""
+
 @app.route('/sucessful_rental/<count>/<user>/<store>/<movie>')
 def successful_rental(count, user, store, movie):
    cnx = sqlite3.connect(database)
@@ -113,16 +126,16 @@ def rent():
       movie_name = str(request.form['mn'])
       store_id = request.form['sid']
       # temporarily expect exact movie name match because will add search result display later
-      query  = """SELECT Catalog.quantity_available FROM Catalog JOIN Movie ON Movie.movie_id = Catalog.movie_id
-               JOIN Store ON Store.store_id = Catalog.store_id
-               WHERE Movie.movie_name LIKE \'""" + str(movie_name) + """\'
-               AND (Store.store_id = """ + store_id + """
-               OR Store.zip_code LIKE \'""" + str(store_id) + """\');"""
-      curs.execute(query)
-      count = curs.fetchall()
+      curs.execute(check_catalog_combo % (str(movie_name), int(store_id), str(store_id)))
+      check_catalog_count = curs.fetchall()[0][0]
+      if check_catalog_count >= 1:
+         curs.execute(count_catelog_available % (str(movie_name), int(store_id), str(store_id)))
+         count = curs.fetchall()[0][0]
+      else: 
+         count = 0
       cnx.commit()
       curs.close()
-      return redirect(url_for('successful_rental',count = count[0][0], user=user, store=str(store_id), movie=str(movie_name)))
+      return redirect(url_for('successful_rental',count = count, user=user, store=str(store_id), movie=str(movie_name)))
    curs.close()
    return render_template('rent.html')
 
