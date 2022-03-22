@@ -49,7 +49,7 @@ get_movies_by_star = """
 
 rent_movie_from_store = """
     INSERT INTO Active_Rentals (rental_id, movie_id, store_id, customer_id, date_rented, date_due, transaction_id)
-    VALUES (%d, %d, %d, %d, %s, %s, (SELECT count(*) FROM Transaction) + 1));
+    VALUES (%d, %d, %d, %s, %s, %s, (SELECT count(*) FROM Transaction) + 1));
 """
 
 rent_movie_trigger = """
