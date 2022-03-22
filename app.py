@@ -52,8 +52,24 @@ def signup():
    return render_template('signup.html')
 
 @app.route('/rent', methods=['POST', 'GET'])
-def ren():
-    return render_template('rent.html')
+def rent():
+   cnx = sqlite3.connect('Mockbusters.db')
+   curs = cnx.cursor()
+   if request.method == 'POST':
+      movie_name = str(request.form['mn'])
+      store_id = request.form['sid']
+      query  = """SELECT count(*) FROM Catalog JOIN Movie ON Movie.movie_id = Catalog.movie_id
+               JOIN Store ON Store.store_id = Catalog.store_id
+               WHERE Movie.movie_name LIKE \'%""" + str(movie_name) + """%\'
+               AND (Store.store_id = """ + store_id + """
+               OR Store.zip_code LIKE \'""" + str(store_id) + """\');"""
+      curs.execute(query)
+      count = curs.fetchall()
+      cnx.commit()
+      curs.close()
+      return render_template('rent.html')
+   curs.close()
+   return render_template('rent.html')
 
 @app.route('/return_movie', methods=['GET', 'POST'])
 def return_movie():
