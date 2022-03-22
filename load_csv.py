@@ -1,7 +1,7 @@
 import sqlite3 as sql
 import pandas as pd
 
-con = sql.connect("blockbusters.db")
+con = sql.connect("Mockbusters.db")
 cur = con.cursor()
 tables = cur.fetchall()
 # for (table_name, ) in tables:
@@ -37,7 +37,7 @@ def row_processor(row, table_name, param):
     return 'INSERT INTO {} VALUES ({});'.format(table_name, new_row)
 
 def pdtosql(data_frame, table_name, param):
-    con = sql.connect("blockbusters.db")
+    con = sql.connect("Mockbusters.db")
     cur = con.cursor()
     args_list = []
     args_list.append(table_name)
