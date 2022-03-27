@@ -49,7 +49,7 @@ def pdtosql(data_frame, table_name, param):
         cur.execute(i)
     con.commit()
 
-pdtosql(customer, "Customer", ["int", "str", "str"])
+pdtosql(customer, "Customer", ["str", "str", "str"])
 pdtosql(catalog, "Catalog", ["int", "int", "int", "int", "int"])
 pdtosql(movie, "Movie", ["int", "str", "str", "str", "int", "str"])
 pdtosql(store, "Store", ["int", "str", "str"])
