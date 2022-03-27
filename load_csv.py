@@ -22,6 +22,7 @@ con.commit()
 catalog = pd.read_csv("data/Catalog.csv")
 movie = pd.read_csv("data/Movies.csv")
 customer = pd.read_csv("data/customer.csv")
+store = pd.read_csv("data/store.csv")
 # print(catalog)
 
 # Create a function to iterate through pd data frame and insert into respective table
@@ -51,6 +52,7 @@ def pdtosql(data_frame, table_name, param):
 pdtosql(customer, "Customer", ["int", "str", "str"])
 pdtosql(catalog, "Catalog", ["int", "int", "int", "int", "int"])
 pdtosql(movie, "Movie", ["int", "str", "str", "str", "int", "str"])
+pdtosql(store, "Store", ["int", "str", "str"])
 
 
 
