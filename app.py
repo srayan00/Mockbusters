@@ -33,6 +33,10 @@ rent_movie = """
    VALUES ((SELECT count(*) FROM Active_Rentals) + 1, %d, %d, \'%s\', %s, %s, (SELECT count(*) FROM Transactions) + 1);
 """
 
+get_most_recent_rental_id = """
+SELECT count(*) FROM Active_Rentals;
+"""
+
 find_movie_id_by_name = """
    SELECT movie_id FROM Movie WHERE movie_name LIKE \'%s\';
 """
@@ -73,9 +77,11 @@ def successful_rental(count, user, store, movie):
          curs.execute(get_due_date)
          due_date = curs.fetchall()[0][0]
          curs.execute(rent_movie % (int(movie_id), int(store), user, curr_date, due_date))
+         curs.execute(get_most_recent_rental_id)
+         rental_id = curs.fetchall()[0][0]
          cnx.commit()
          curs.close()
-         return 'succesfully rented movie'
+         return 'succesfully rented movie with rental id: ' + str(rental_id) + '. Save this rental id to make your return.'
       else:
          cnx.commit()
          curs.close()
