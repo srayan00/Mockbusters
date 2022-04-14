@@ -147,7 +147,14 @@ def rent():
 
 @app.route('/return_movie', methods=['GET', 'POST'])
 def return_movie():
-    return render_template('return.html')
+   cnx = sqlite3.connect(database)
+   curs = cnx.cursor()
+   if request.method == 'POST':
+      user = str(request.form['un'])
+      movie_name = str(request.form['mn'])
+      rental_id = request.form['rid']
+      print(user, movie_name, rental_id)
+   return render_template('return.html')
 
 @app.route('/lookup', methods=['GET', 'POST'])
 def lookup():
