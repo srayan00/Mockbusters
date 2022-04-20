@@ -98,4 +98,5 @@ CREATE TRIGGER afterRentalInsert AFTER INSERT ON Active_Rentals FOR EACH ROW
 CREATE TRIGGER updateCatalog AFTER INSERT ON Active_Rentals FOR EACH ROW
     BEGIN
         UPDATE Catalog SET quantity_available = quantity_available - 1 WHERE movie_id = NEW.movie_id AND store_id = NEW.store_id;
+        UPDATE Catalog SET times_rented = times_rented - 1 WHERE movie_id = NEW.movie_id AND store_id = NEW.store_id;
     END;
