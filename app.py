@@ -208,16 +208,17 @@ def return_movie():
 
 @app.route('/lookup', methods=['GET', 'POST'])
 def lookup():
+    if request.method == 'POST':
+        print("hi")
+        movie_name = str(request.form['mn'])
+
+        yt = str(request.form.getlist('yt'))
+        #rental_id = request.form['rid']
+
+        print('checkmark value: ' + yt)
+        return render_template('lookup.html')
     return render_template('lookup.html')
 
-
-# def login():
-#    if request.method == 'POST':
-#       user = request.form['nm']
-#       return redirect(url_for('success',name = user))
-#    else:
-#       user = request.args.get('nm')
-#       return redirect(url_for('success',name = user))
 
 if __name__ == '__main__':
     app.run(debug=True)
