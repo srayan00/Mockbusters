@@ -48,6 +48,12 @@ get_due_date = """
    SELECT DATE(\'now\', \'+7 days\');
 """
 
+lookup_whole_catalog = """
+SELECT c.movie_id, m.movie_name, m.genre, m.director_name, m.rating, m.cast_list, c.store_id, c.quantity_available, c.times_rented
+FROM Movie m JOIN Catalog c ON m.movie_id = c.movie_id;
+
+"""
+
 check_catalog_combo = """
    SELECT count(*) FROM Catalog JOIN Movie ON Movie.movie_id = Catalog.movie_id
                   JOIN Store ON Store.store_id = Catalog.store_id
@@ -76,6 +82,16 @@ remove_from_active_rentals = """
       DELETE FROM Active_Rentals WHERE Active_Rentals.rental_id = %d and Active_Rentals.customer_id = \'%s\';
       """
 
+
+lookup_from_search = """
+SELECT m.movie_id, m.movie_name, m.genre, m.director_name, m.rating, m.cast_list, Catalog.store_id, Catalog.quantity_available, Catalog.times_rented
+FROM Movie as m
+JOIN Catalog ON Catalog.movie_id = m.movie_id
+WHERE m.movie_name LIKE \'%{}%\'
+AND m.cast_list LIKE \'%{}%\'
+AND m.director_name LIKE \'%{}%\'
+AND m.genre LIKE \'%{}%\'
+"""
 
 @app.route('/successful_return/<user>/<movie_name>/<rental_id>')
 def successful_return(user, movie_name, rental_id):
@@ -208,16 +224,42 @@ def return_movie():
 
 @app.route('/lookup', methods=['GET', 'POST'])
 def lookup():
-    if request.method == 'POST':
-        print("hi")
-        movie_name = str(request.form['mn'])
+   cnx = sqlite3.connect(database)
+   curs = cnx.cursor()
+   if request.method == 'POST':
+      movie_name = str(request.form['mn'])
+      actor_name = str(request.form['an'])
+      director_name = str(request.form['dn'])
+      genre = str(request.form['ge'])
+      store_id = request.form['sid']
+      yt = str(request.form.getlist('yt'))
 
-        yt = str(request.form.getlist('yt'))
-        #rental_id = request.form['rid']
+      lookup_query = lookup_from_search.format(movie_name, actor_name, director_name, genre)
+      if store_id.isnumeric():
+         
+         store_id_query = """ AND Catalog.store_id = {}"""
+         lookup_query = lookup_query + store_id_query.format(int(store_id[0][0]))
+      
+      if ( str(yt)) != "" and 'on' in str(yt):
+         lookup_query = lookup_query + """ ORDER BY Catalog.times_rented DESC""" 
 
-        print('checkmark value: ' + yt)
-        return render_template('lookup.html')
-    return render_template('lookup.html')
+      lookup_query = lookup_query + """;"""
+      curs.execute(lookup_query)
+      lookup_info = []
+      for movie_id, movie_name, genre, director_name, rating, cast_list, store_id, quantity_available, times_rented in (curs.fetchall()):
+         lookup_info.append((movie_id, movie_name, genre, director_name, rating, cast_list, store_id, quantity_available, times_rented))
+      cnx.commit()
+      curs.close()
+      return (render_template('lookup.html', data = lookup_info))
+
+   curs.execute(lookup_whole_catalog)
+
+   lookup_info = []
+   for movie_id, movie_name, genre, director_name, rating, cast_list, store_id, quantity_available, times_rented in (curs.fetchall()):
+      lookup_info.append((movie_id, movie_name, genre, director_name, rating, cast_list, store_id, quantity_available, times_rented))
+   cnx.commit()
+   curs.close()
+   return (render_template('lookup.html', data = lookup_info))
 
 
 if __name__ == '__main__':
