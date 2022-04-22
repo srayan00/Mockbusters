@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    </head>
     <body>
-        <h1 style="text-align:center">Mockbusters</h1>
-        <p style="text-align:center"> Rip off of Blockbusters
-            <br> <br>
+        <h1>Mockbusters</h1>
+        <p style="text-align:center">
+            <!--<br> <br>-->
             <a href="/rent">
-            <button style="text-align:center;height:40px;width:200px" type="button">Rent Movie</button>
+            <button type="button">Rent Movie</button>
             <br><br>
             </a>
 
             <a href="/return_movie">
-            <button style="text-align:center;height:40px;width:200px" type="button">Return Movie</button>
+            <button type="button">Return Movie</button>
             <br><br>
             </a>
 
             <a href="/lookup">
-            <button style="text-align:center;height:40px;width:200px" type="button">Look Up Movie</button>
+            <button type="button">Look Up Movie</button>
             <br><br>
             </a>
         </p>
