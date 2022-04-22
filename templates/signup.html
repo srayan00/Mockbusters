@@ -1,12 +1,16 @@
 <html>
+   <head>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+   </head>
    <body>
+      <h1>Sign Up</h1>
       <form action = "http://127.0.0.1:5000/signup" method = "POST">
-         <p>Enter Username:</p>
-         <p><input type = "text" name = "nm" /></p>
-         <p>Enter First and Last Name (i.e.: John Doe):</p>
-         <p><input type = "text" name = "un" /></p>
-         <p>Enter Email(i.e.: johndoe@purdue.edu):</p>
-         <p><input type = "text" name = "em" /></p>
+         <p>Enter Username:
+         <span><input type = "text" name = "nm" /></span></p>
+         <p>Enter First and Last Name (i.e.: John Doe):
+         <span><input type = "text" name = "un" /></span></p>
+         <p>Enter Email(i.e.: johndoe@purdue.edu):
+         <span><input type = "text" name = "em" /></span></p>
          <p><input type = "submit" value = "submit" /></p>
       </form>
    </body>
