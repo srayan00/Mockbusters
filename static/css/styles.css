@@ -10,7 +10,9 @@ h1 {
 }
 p {
   font-family: 'Bebas Neue', serif;
-  color: red;
+  color: rgba(16, 48, 173, 0.8);
+  text-align: center;
+  font-size: 30px;
 }
 button {
   font-family: 'Bebas Neue', serif;
@@ -22,4 +24,22 @@ button {
   width:300px;
   border: 2px solid rgba(16, 48, 173, 0.8);
 
+}
+
+input[type=text] {
+  border: 3px solid rgba(16, 48, 173, 0.8);
+  height: 30px;
+  position: relative;
+  top: -5px;
+}
+
+input[type=submit] {
+  font-family: 'Bebas Neue', serif;
+  background-color: rgba(16, 48, 173, 0.8);
+  color: white;
+  text-align:center;
+  font-size: 24px;
+  border: 3px solid rgba(16, 48, 173, 0.8);
+  height: 45px;
+  width: 100px;
 }
