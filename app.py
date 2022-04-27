@@ -8,12 +8,20 @@
 # go to link/signup in the browser
 import sqlite3
 from sqlite3 import Error
-
 from flask import Flask, redirect, url_for, request, render_template
+import alchemy_init
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 database = 'Mockbusters.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Mockbusters.db'
+db = SQLAlchemy(app)
+if (db is None):
+    raise ValueError("Could not initialize ORM: db is None")
+
+alchemy_init.SQL_ALCHEMY_DB = db
+from Nupurs_task import Customer, Movie, Store, Catalog, Transactions, Active_Rentals
 
 add_customer = """
     INSERT INTO Customer(customer_id, customer_name, customer_email)
@@ -95,12 +103,17 @@ AND m.genre LIKE \'%{}%\'
 
 @app.route('/successful_return/<user>/<movie_name>/<rental_id>')
 def successful_return(user, movie_name, rental_id):
-    cnx = sqlite3.connect(database)
-    curs = cnx.cursor()
-    curs.execute(add_back_movie % (int(rental_id), int(rental_id)))
-    curs.execute(remove_from_active_rentals % (int(rental_id), str(user)))
-    cnx.commit()
-    curs.close()
+    # cnx = sqlite3.connect(database)
+    # curs = cnx.cursor()
+    ### ORM STARTS
+    curr_rental = Active_Rentals.query.filter_by(rental_id = int(rental_id)).first()
+    db.session.delete(curr_rental)
+    db.session.commit()
+    ### END
+    # curs.execute(add_back_movie % (int(rental_id), int(rental_id)))
+    # curs.execute(remove_from_active_rentals % (int(rental_id), str(user)))
+    # cnx.commit()
+    # curs.close()
     return 'Thank you for shopping with us, ' + user + '! You have successfully returned ' + movie_name + '!'
 
 
@@ -114,13 +127,23 @@ def successful_rental(count, user, store, movie):
         if int(count) >= 1:
             curs.execute(find_movie_id_by_name % (str(movie)))
             movie_id = curs.fetchall()[0][0]
+            print(db.session.execute(find_movie_id_by_name % (str(movie))))
             curs.execute(get_curr_date)
             curr_date = curs.fetchall()[0][0]
             curs.execute(get_due_date)
             due_date = curs.fetchall()[0][0]
-            curs.execute(rent_movie % (int(movie_id), int(store), user, curr_date, due_date))
             curs.execute(get_most_recent_rental_id)
-            rental_id = curs.fetchall()[0][0]
+            ### ORM IMPLEMENTATION START ###
+            rental_id = curs.fetchall()[0][0] + 1
+
+            new_rental = Active_Rentals(rental_id = int(rental_id), movie_id = int(movie_id), store_id = int(store),
+                                        customer_id = user, date_rented = curr_date, date_due = due_date, transaction_id =int(rental_id))
+            db.session.add(new_rental)
+            db.session.commit()
+            ### END ###
+            # curs.execute(rent_movie % (int(movie_id), int(store), user, curr_date, due_date))
+            # curs.execute(get_most_recent_rental_id)
+            # rental_id = curs.fetchall()[0][0]
             cnx.commit()
             curs.close()
             return 'successfully rented movie with rental id: ' + str(
@@ -138,11 +161,16 @@ def successful_rental(count, user, store, movie):
 @app.route('/success/<count>/<user>/<name>/<email>')
 def success(count, user, name, email):
     if count == '0':
-        cnx = sqlite3.connect(database)
-        curs = cnx.cursor()
-        curs.execute(add_customer % (user, name, email))
-        cnx.commit()
-        curs.close()
+        # cnx = sqlite3.connect(database)
+        # curs = cnx.cursor()
+        ### ORM START ###
+        new_customer = Customer(customer_id = user, customer_name = name, customer_email = email)
+        db.session.add(new_customer)
+        db.session.commit()
+        ### END
+        # curs.execute(add_customer % (user, name, email))
+        # cnx.commit()
+        # curs.close()
         return 'Successfully created username: ' + user
     else:
         return 'oops! username already exists, please go back and try again.'
@@ -190,6 +218,7 @@ def rent():
         curs.close()
         return redirect(
             url_for('successful_rental', count=count, user=user, store=str(store_id), movie=str(movie_name)))
+        # return render_template('successful_rental.html', count = count, user = user, movie = str(movie_name))
     curs.close()
     return render_template('rent.html')
 

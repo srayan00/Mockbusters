@@ -48,7 +48,20 @@ class Active_Rentals(db.Model):
     movie_id = db.Column(db.Integer, db.ForeignKey(Movie.movie_id), primary_key = False, nullable = False)
     store_id = db.Column(db.Integer, db.ForeignKey(Store.store_id), primary_key = False, nullable = False)
     customer_id = db.Column(db.Integer, db.ForeignKey(Customer.customer_id), primary_key = False, nullable = False)
-    date_rented = db.Column(db.Date, primary_key = False, nullable = False)
-    date_due = db.Column(db.Date, primary_key=False, nullable=False)
+    date_rented = db.Column(db.Text, primary_key = False, nullable = False)
+    date_due = db.Column(db.Text, primary_key=False, nullable=False)
     transaction_id = db.Column(db.Integer, db.ForeignKey(Transactions.transaction_id),
                                primary_key = False, nullable = False)
+
+
+# def __init__(self, rental_id, movie_id, store_id, customer_id, date_rented, date_due, transaction_id):
+#     self.rental_id = rental_id
+#     self.movie_id = movie_id
+#     self.store_id = store_id
+#     self.customer_id = customer_id
+#     self.date_rented = date_rented
+#     self.date_due = date_due
+#     self.transaction_id = transaction_id
+
+
+db.create_all()
