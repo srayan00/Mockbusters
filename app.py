@@ -128,7 +128,6 @@ def successful_rental(count, user, store, movie):
         if int(count) >= 1:
             curs.execute(find_movie_id_by_name % (str(movie)))
             movie_id = curs.fetchall()[0][0]
-            print(db.session.execute(find_movie_id_by_name % (str(movie))))
             curs.execute(get_curr_date)
             curr_date = curs.fetchall()[0][0]
             curs.execute(get_due_date)
