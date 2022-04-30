@@ -22,7 +22,7 @@ if (db is None):
     raise ValueError("Could not initialize ORM: db is None")
 
 alchemy_init.SQL_ALCHEMY_DB = db
-from Nupurs_task import Customer, Movie, Store, Catalog, Transactions, Active_Rentals
+from orm import Customer, Movie, Store, Catalog, Transactions, Active_Rentals
 
 add_customer = """
     INSERT INTO Customer(customer_id, customer_name, customer_email)

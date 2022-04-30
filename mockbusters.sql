@@ -29,6 +29,7 @@ DROP TABLE IF EXISTS 'Transactions';
      PRIMARY KEY ('movie_id')
  ) ;
  -- ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ CREATE INDEX Movie_Index ON Movie(movie_name);
 
 
  CREATE TABLE IF NOT EXISTS 'Store'(
@@ -40,6 +41,7 @@ DROP TABLE IF EXISTS 'Transactions';
      PRIMARY KEY ('store_id')
  ) ;
  -- ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CREATE INDEX Store_Index ON Store(store_id);
 
   CREATE TABLE IF NOT EXISTS 'Catalog'(
      --Attributes
@@ -86,6 +88,7 @@ DROP TABLE IF EXISTS 'Transactions';
      FOREIGN KEY ('customer_id') REFERENCES Customer('customer_id')
  ) ;
  -- ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ CREATE INDEX Rental_Index ON Active_Rentals(movie_id,store_id);
 
 
 CREATE TRIGGER afterRentalInsert AFTER INSERT ON Active_Rentals FOR EACH ROW
