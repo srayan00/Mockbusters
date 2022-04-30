@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS 'Transactions';
      PRIMARY KEY ('customer_id')
  );
 -- ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ CREATE INDEX Customer ON Customer(customer_id);
 
 
  CREATE TABLE IF NOT EXISTS 'Movie'(
