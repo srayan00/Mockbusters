@@ -2,6 +2,7 @@
 # in terminal:
 # pip install virtualenv
 # pip install flask
+# pip install flask-sqlalchemy
 # export FLASK_APP=app
 # export FLASK_ENV=development
 # flask run (or "python -m flask run" if that doesn't work)
