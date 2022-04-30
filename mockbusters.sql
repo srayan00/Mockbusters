@@ -104,10 +104,3 @@ CREATE TRIGGER updateCatalog AFTER INSERT ON Active_Rentals FOR EACH ROW
         UPDATE Catalog SET quantity_available = quantity_available - 1 WHERE movie_id = NEW.movie_id AND store_id = NEW.store_id;
         UPDATE Catalog SET times_rented = times_rented + 1 WHERE movie_id = NEW.movie_id AND store_id = NEW.store_id;
     END;
-
-CREATE TRIGGER returnCatalog BEFORE DELETE ON Active_Rentals FOR EACH ROW
-    BEGIN
-        UPDATE Catalog SET quantity_available = quantity_available + 1 
-        WHERE movie_id = (SELECT movie_id FROM Active_Rentals WHERE Active_Rentals.rental_id = OLD.rental_id)
-        AND Catalog.store_ID = (SELECT store_id FROM Active_Rentals WHERE Active_Rentals.rental_id = OLD.rental_id); 
-    END;

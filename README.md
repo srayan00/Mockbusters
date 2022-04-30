@@ -21,6 +21,7 @@ export FLASK_APP=app
 export FLASK_ENV=development
 python -m flask run
 ```
+Note that the above instructions may differ based on operating system type.
 
 Go to http://127.0.0.1:5000/signup to signup
 
