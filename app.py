@@ -12,6 +12,7 @@ from sqlite3 import Error
 from flask import Flask, redirect, url_for, request, render_template
 import alchemy_init
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import update
 
 app = Flask(__name__)
 
@@ -106,11 +107,19 @@ AND m.genre LIKE \'%{}%\'
 def successful_return(user, movie_name, rental_id):
     # cnx = sqlite3.connect(database)
     # curs = cnx.cursor()
-    ### ORM STARTS
+    ### ORM STARTS ###
+    # curs.execute(add_back_movie % (int(rental_id), int(rental_id)))
+    # cnx.commit()
+    # curs.close()
     curr_rental = Active_Rentals.query.filter_by(rental_id = int(rental_id)).first()
+    # curr_movie_id = curr_rental.movie_id
+    # curr_store_id = curr_rental.store_id
+    # catalog_d = Catalog.query.filter(movie_id == curr_movie_id, store_id == curr_store_id)
+    # catalog_d.quantity_available = catalog_d.quantity_available + 1
+    # db.session.commit()
     db.session.delete(curr_rental)
     db.session.commit()
-    ### END
+    ### END ###
     # curs.execute(add_back_movie % (int(rental_id), int(rental_id)))
     # curs.execute(remove_from_active_rentals % (int(rental_id), str(user)))
     # cnx.commit()
@@ -126,15 +135,20 @@ def successful_rental(count, user, store, movie):
     user_count = curs.fetchall()
     if user_count[0][0] == 1:
         if int(count) >= 1:
-            curs.execute(find_movie_id_by_name % (str(movie)))
-            movie_id = curs.fetchall()[0][0]
+            # curs.execute(find_movie_id_by_name % (str(movie)))
+            # movie_id = curs.fetchall()[0][0]
+            ### ORM STARTS ###
+            curr_movie = Movie.query.filter(Movie.movie_name.like(str(movie))).first()
+            movie_id = curr_movie.movie_id
+            ### END ###
             curs.execute(get_curr_date)
             curr_date = curs.fetchall()[0][0]
             curs.execute(get_due_date)
             due_date = curs.fetchall()[0][0]
-            curs.execute(get_most_recent_rental_id)
-            ### ORM IMPLEMENTATION START ###
-            rental_id = curs.fetchall()[0][0] + 1
+            # curs.execute(get_most_recent_rental_id)
+            ### ORM STARTS ###
+            count_rent = Transactions.query.count()
+            rental_id = count_rent + 1
 
             new_rental = Active_Rentals(rental_id = int(rental_id), movie_id = int(movie_id), store_id = int(store),
                                         customer_id = user, date_rented = curr_date, date_due = due_date, transaction_id =int(rental_id))
@@ -163,11 +177,11 @@ def success(count, user, name, email):
     if count == '0':
         # cnx = sqlite3.connect(database)
         # curs = cnx.cursor()
-        ### ORM START ###
+        ### ORM STARTS ###
         new_customer = Customer(customer_id = user, customer_name = name, customer_email = email)
         db.session.add(new_customer)
         db.session.commit()
-        ### END
+        ### END ###
         # curs.execute(add_customer % (user, name, email))
         # cnx.commit()
         # curs.close()
@@ -183,18 +197,21 @@ def homepage():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    cnx = sqlite3.connect(database)
-    curs = cnx.cursor()
+    # cnx = sqlite3.connect(database)
+    # curs = cnx.cursor()
     if request.method == 'POST':
+        ### ORM STARTS ###
         user = str(request.form['nm'])
-        query = check_username % (str(user))
-        curs.execute(query)
-        count = curs.fetchall()
-        cnx.commit()
-        curs.close()
-        return redirect(url_for('success', count=count[0][0], user=user, name=str(request.form['un']),
+        count = Customer.query.filter(Customer.customer_id == user).count()
+        ### END ###
+        # query = check_username % (str(user))
+        # curs.execute(query)
+        # count = curs.fetchall()
+        # cnx.commit()
+        # curs.close()
+        return redirect(url_for('success', count=count, user=user, name=str(request.form['un']),
                                 email=str(request.form['em'])))
-    curs.close()
+    # curs.close()
     return render_template('signup.html')
 
 
@@ -206,7 +223,6 @@ def rent():
         user = str(request.form['un'])
         movie_name = str(request.form['mn'])
         store_id = request.form['sid']
-
         curs.execute(check_catalog_combo % (str(movie_name), int(store_id), str(store_id)))
         check_catalog_count = curs.fetchall()[0][0]
         if check_catalog_count >= 1:
@@ -225,29 +241,33 @@ def rent():
 
 @app.route('/return_movie', methods=['GET', 'POST'])
 def return_movie():
-    cnx = sqlite3.connect(database)
-    curs = cnx.cursor()
+    # cnx = sqlite3.connect(database)
+    # curs = cnx.cursor()
     if request.method == 'POST':
         user = str(request.form['un'])
         movie_name = str(request.form['mn'])
         rental_id = request.form['rid']
 
         # checks if the username has a rental under that rental ID, returns 1 if it exists and 0 if it doesn't
-        curs.execute(check_return_combo % (int(rental_id), str(user)))
-        check_return_count = curs.fetchall()[0][0]
+        # curs.execute(check_return_combo % (int(rental_id), str(user)))
+        # check_return_count = curs.fetchall()[0][0]
+        ### ORM STARTS ###
+        check_return_count = Active_Rentals.query.filter(Active_Rentals.rental_id == int(rental_id),
+                                                         Active_Rentals.customer_id.like(str(user))).count()
+        ### END ###
         print('check_return_count = ', check_return_count)
 
         if check_return_count >= 1:
-            cnx.commit()
-            curs.close()
+            # cnx.commit()
+            # curs.close()
             return redirect(url_for('successful_return', user=user, movie_name = str(movie_name),
                                     rental_id=str(rental_id)))
         else:
             # show unsuccessful page
-            cnx.commit()
-            curs.close()
+            # cnx.commit()
+            # curs.close()
             return "Incorrect username or rental id entered. Please go back and try again!"
-    curs.close()
+    # curs.close()
     return render_template('return.html')
 
 
