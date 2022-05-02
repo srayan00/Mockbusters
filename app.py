@@ -13,6 +13,7 @@ from flask import Flask, redirect, url_for, request, render_template
 import alchemy_init
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import update
+from sqlalchemy.orm import Session
 
 app = Flask(__name__)
 
@@ -103,91 +104,111 @@ AND m.director_name LIKE \'%{}%\'
 AND m.genre LIKE \'%{}%\'
 """
 
+start_trans = """BEGIN TRANSACTION;"""
+commit_trans = """COMMIT;"""
+read_uncommit = """SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;"""
+read_commit = """SET TRANSACTION ISOLATION LEVEL READ COMMITTED;"""
+repeatable = """SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;"""
+serializable = """SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;"""
+
 @app.route('/successful_return/<user>/<movie_name>/<rental_id>')
 def successful_return(user, movie_name, rental_id):
+    # db.engine.execute(serializable)
+    # db.engine.execute(start_trans)
     # cnx = sqlite3.connect(database)
     # curs = cnx.cursor()
     ### ORM STARTS ###
     # curs.execute(add_back_movie % (int(rental_id), int(rental_id)))
     # cnx.commit()
     # curs.close()
-    curr_rental = Active_Rentals.query.filter_by(rental_id = int(rental_id)).first()
-    # curr_movie_id = curr_rental.movie_id
-    # curr_store_id = curr_rental.store_id
-    # catalog_d = Catalog.query.filter(movie_id == curr_movie_id, store_id == curr_store_id)
-    # catalog_d.quantity_available = catalog_d.quantity_available + 1
-    # db.session.commit()
-    db.session.delete(curr_rental)
-    db.session.commit()
-    ### END ###
-    # curs.execute(add_back_movie % (int(rental_id), int(rental_id)))
-    # curs.execute(remove_from_active_rentals % (int(rental_id), str(user)))
-    # cnx.commit()
-    # curs.close()
-    return 'Thank you for shopping with us, ' + user + '! You have successfully returned ' + movie_name + '!'
+    with Session(db.engine) as session:
+        # curr_rental = Active_Rentals.query.filter_by(rental_id = int(rental_id)).first()
+        curr_rental = session.query(Active_Rentals).filter_by(rental_id = int(rental_id)).first()
+        # curr_movie_id = curr_rental.movie_id
+        # curr_store_id = curr_rental.store_id
+        # catalog_d = Catalog.query.filter(movie_id == curr_movie_id, store_id == curr_store_id)
+        # catalog_d.quantity_available = catalog_d.quantity_available + 1
+        # db.session.commit()
+        session.delete(curr_rental)
+        session.commit()
+        # db.engine(commit_trans)
+        ### END ###
+        # curs.execute(add_back_movie % (int(rental_id), int(rental_id)))
+        # curs.execute(remove_from_active_rentals % (int(rental_id), str(user)))
+        # cnx.commit()
+        # curs.close()
+        return 'Thank you for shopping with us, ' + user + '! You have successfully returned ' + movie_name + '!'
 
 
 @app.route('/successful_rental/<count>/<user>/<store>/<movie>')
 def successful_rental(count, user, store, movie):
-    cnx = sqlite3.connect(database)
-    curs = cnx.cursor()
-    curs.execute(check_username % user)
-    user_count = curs.fetchall()
-    if user_count[0][0] == 1:
-        if int(count) >= 1:
-            # curs.execute(find_movie_id_by_name % (str(movie)))
-            # movie_id = curs.fetchall()[0][0]
-            ### ORM STARTS ###
-            curr_movie = Movie.query.filter(Movie.movie_name.like(str(movie))).first()
-            movie_id = curr_movie.movie_id
-            ### END ###
-            curs.execute(get_curr_date)
-            curr_date = curs.fetchall()[0][0]
-            curs.execute(get_due_date)
-            due_date = curs.fetchall()[0][0]
-            # curs.execute(get_most_recent_rental_id)
-            ### ORM STARTS ###
-            count_rent = Transactions.query.count()
-            rental_id = count_rent + 1
+    # db.engine.execute(serializable)
+    # db.engine.execute(start_trans)
+    with Session(db.engine) as session:
+        cnx = sqlite3.connect(database)
+        curs = cnx.cursor()
+        curs.execute(check_username % user)
+        user_count = curs.fetchall()
+        if user_count[0][0] == 1:
+            if int(count) >= 1:
+                # curs.execute(find_movie_id_by_name % (str(movie)))
+                # movie_id = curs.fetchall()[0][0]
+                ### ORM STARTS ###
+                curr_movie = session.query(Movie).filter(Movie.movie_name.like(str(movie))).first()
+                movie_id = curr_movie.movie_id
+                ### END ###
+                curs.execute(get_curr_date)
+                curr_date = curs.fetchall()[0][0]
+                curs.execute(get_due_date)
+                due_date = curs.fetchall()[0][0]
+                # curs.execute(get_most_recent_rental_id)
+                ### ORM STARTS ###
+                count_rent = Transactions.query.count()
+                rental_id = count_rent + 1
 
-            new_rental = Active_Rentals(rental_id = int(rental_id), movie_id = int(movie_id), store_id = int(store),
-                                        customer_id = user, date_rented = curr_date, date_due = due_date, transaction_id =int(rental_id))
-            db.session.add(new_rental)
-            db.session.commit()
-            ### END ###
-            # curs.execute(rent_movie % (int(movie_id), int(store), user, curr_date, due_date))
-            # curs.execute(get_most_recent_rental_id)
-            # rental_id = curs.fetchall()[0][0]
-            cnx.commit()
-            curs.close()
-            return 'successfully rented movie with rental id: ' + str(
-                rental_id) + '. Save this rental id to make your return.'
+                new_rental = Active_Rentals(rental_id = int(rental_id), movie_id = int(movie_id), store_id = int(store),
+                                            customer_id = user, date_rented = curr_date, date_due = due_date, transaction_id =int(rental_id))
+                session.add(new_rental)
+                session.commit()
+                ### END ###
+                # curs.execute(rent_movie % (int(movie_id), int(store), user, curr_date, due_date))
+                # curs.execute(get_most_recent_rental_id)
+                # rental_id = curs.fetchall()[0][0]
+                cnx.commit()
+                curs.close()
+                return 'successfully rented movie with rental id: ' + str(
+                    rental_id) + '. Save this rental id to make your return.'
+            else:
+                cnx.commit()
+                curs.close()
+                return movie + " is not available at store with id: " + store
         else:
             cnx.commit()
             curs.close()
-            return movie + " is not available at store with id: " + store
-    else:
-        cnx.commit()
-        curs.close()
-        return 'oops! please go back and enter a valid username'
+            return 'oops! please go back and enter a valid username'
+    # db.engine.execute(commit_trans)
 
 
 @app.route('/success/<count>/<user>/<name>/<email>')
 def success(count, user, name, email):
-    if count == '0':
-        # cnx = sqlite3.connect(database)
-        # curs = cnx.cursor()
-        ### ORM STARTS ###
-        new_customer = Customer(customer_id = user, customer_name = name, customer_email = email)
-        db.session.add(new_customer)
-        db.session.commit()
-        ### END ###
-        # curs.execute(add_customer % (user, name, email))
-        # cnx.commit()
-        # curs.close()
-        return 'Successfully created username: ' + user
-    else:
-        return 'oops! username already exists, please go back and try again.'
+    with Session(db.engine) as session:
+        if count == '0':
+            # db.engine.execute(serializable)
+            # db.engine.execute(start_trans)
+            # cnx = sqlite3.connect(database)
+            # curs = cnx.cursor()
+            ### ORM STARTS ###
+            new_customer = Customer(customer_id = user, customer_name = name, customer_email = email)
+            session.add(new_customer)
+            session.commit()
+            ### END ###
+            # curs.execute(add_customer % (user, name, email))
+            # cnx.commit()
+            # curs.close()
+            # db.engine.execute(commit_trans)
+            return 'Successfully created username: ' + user
+        else:
+            return 'oops! username already exists, please go back and try again.'
 
 
 @app.route('/', methods=['GET', 'POST'])
