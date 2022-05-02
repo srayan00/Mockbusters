@@ -58,8 +58,10 @@ rent_movie_trigger = """
         INSERT INTO Transactions(transaction_id, customer_id, price, store_id)
         VALUES (NEW.transaction_id, NEW.customer_id, DATEDIFF(NEW.date_due, NEW.date_rented) * 3, NEW.store_id);
     END;
-
 """
 
+return_movie = """
+    DELETE FROM Active_Rentals
 
+"""
 
