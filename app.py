@@ -68,29 +68,29 @@ FROM Movie m JOIN Catalog c ON m.movie_id = c.movie_id;
 check_catalog_combo = """
    SELECT count(*) FROM Catalog JOIN Movie ON Movie.movie_id = Catalog.movie_id
                   JOIN Store ON Store.store_id = Catalog.store_id
-                  WHERE Movie.movie_name LIKE \'%s\'
-                  AND (Store.store_id = %d
-                  OR Store.zip_code LIKE \'%s\');"""
+                  WHERE Movie.movie_name LIKE \'?\'
+                  AND (Store.store_id = ?
+                  OR Store.zip_code LIKE \'?\');"""
 
 count_catalog_available = """SELECT Catalog.quantity_available FROM Catalog JOIN Movie ON Movie.movie_id = Catalog.movie_id
                   JOIN Store ON Store.store_id = Catalog.store_id
-                  WHERE Movie.movie_name LIKE \'%s\'
-                  AND (Store.store_id = %d
-                  OR Store.zip_code LIKE \'%s\');"""
+                  WHERE Movie.movie_name LIKE \'?\'
+                  AND (Store.store_id = ?
+                  OR Store.zip_code LIKE \'?\');"""
 
 check_return_combo = """
    SELECT count(*) FROM Active_Rentals a
-            WHERE a.rental_id = %d AND a.customer_id LIKE \'%s\';
+            WHERE a.rental_id = ? AND a.customer_id LIKE \'?\';
             """
 
 add_back_movie = """
       UPDATE Catalog SET quantity_available = quantity_available + 1
-            WHERE Catalog.movie_id = (SELECT movie_id FROM Active_Rentals WHERE Active_Rentals.rental_id = %d)
-            AND Catalog.store_ID = (SELECT store_id FROM Active_Rentals WHERE Active_Rentals.rental_id = %d); 
+            WHERE Catalog.movie_id = (SELECT movie_id FROM Active_Rentals WHERE Active_Rentals.rental_id = ?)
+            AND Catalog.store_ID = (SELECT store_id FROM Active_Rentals WHERE Active_Rentals.rental_id = ?); 
             """
 
 remove_from_active_rentals = """
-      DELETE FROM Active_Rentals WHERE Active_Rentals.rental_id = %d and Active_Rentals.customer_id = \'%s\';
+      DELETE FROM Active_Rentals WHERE Active_Rentals.rental_id = ? and Active_Rentals.customer_id = \'?\';
       """
 
 
@@ -244,10 +244,10 @@ def rent():
         user = str(request.form['un'])
         movie_name = str(request.form['mn'])
         store_id = request.form['sid']
-        curs.execute(check_catalog_combo % (str(movie_name), int(store_id), str(store_id)))
+        curs.execute(check_catalog_combo, [str(movie_name), int(store_id), str(store_id)])
         check_catalog_count = curs.fetchall()[0][0]
         if check_catalog_count >= 1:
-            curs.execute(count_catalog_available % (str(movie_name), int(store_id), str(store_id)))
+            curs.execute(count_catalog_available, [str(movie_name), int(store_id), str(store_id)])
             count = curs.fetchall()[0][0]
         else:
             count = 0
